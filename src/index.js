@@ -14,6 +14,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+app.use(express.static('public'));
 
 // Load governance rules at startup — non-negotiable
 const criticalRules = loadCriticalRules();
@@ -33,7 +34,7 @@ if (fs.existsSync(soulPath)) {
 }
 
 // Health check
-app.get('/', (req, res) => {
+app.get('/api', (req, res) => {
   res.json({
     name: 'Helix Ascension',
     mission: 'Infrastructure for human life. Built for the forgotten.',

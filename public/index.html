@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Helix Ascension</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0b0c0f;
+    --surface: #111318;
+    --card: #16181f;
+    --accent: #00c896;
+    --accent-soft: #00c89622;
+    --accent-glow: #00c89644;
+    --warm: #f5c77e;
+    --warm-soft: #f5c77e18;
+    --text: #e4e5ea;
+    --text-soft: #9496a3;
+    --text-dim: #4e5064;
+    --border: #1e2030;
+  }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Ambient background — Zaha-inspired flowing forms */
+  .ambient {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .flow-shape {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.35;
+    animation: drift 20s ease-in-out infinite;
+  }
+
+  .flow-1 {
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, #00c89620, transparent 70%);
+    top: -10%;
+    left: -10%;
+    animation-duration: 25s;
+  }
+
+  .flow-2 {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, #f5c77e12, transparent 70%);
+    bottom: -15%;
+    right: -10%;
+    animation-duration: 30s;
+    animation-delay: -5s;
+  }
+
+  .flow-3 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, #00c89610, transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation-duration: 35s;
+    animation-delay: -10s;
+  }
+
+  @keyframes drift {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(30px, -20px) scale(1.05); }
+    50% { transform: translate(-20px, 30px) scale(0.95); }
+    75% { transform: translate(20px, 20px) scale(1.02); }
+  }
+
+  /* Grain texture */
+  .grain {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+
+  /* Content */
+  .page {
+    position: relative;
+    z-index: 2;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Nav */
+  nav {
+    padding: 24px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-mark {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--accent), #009e78);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--bg);
+    box-shadow: 0 0 30px var(--accent-glow);
+  }
+
+  .logo-name {
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  .logo-name span { color: var(--accent); }
+
+  nav .status {
+    font-size: 12px;
+    color: var(--text-dim);
+    font-weight: 300;
+    letter-spacing: 1px;
+  }
+
+  /* Hero */
+  .hero {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .hero-badge {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 400;
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeIn 1s ease 0.3s forwards;
+  }
+
+  .hero h1 {
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: 200;
+    line-height: 1.15;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeIn 1s ease 0.6s forwards;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    color: var(--accent);
+    font-weight: 400;
+  }
+
+  .hero-sub {
+    font-size: clamp(16px, 2.2vw, 20px);
+    font-weight: 300;
+    color: var(--text-soft);
+    line-height: 1.7;
+    max-width: 580px;
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeIn 1s ease 0.9s forwards;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Rina intro */
+  .rina-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px 36px;
+    max-width: 540px;
+    width: 100%;
+    text-align: left;
+    opacity: 0;
+    animation: fadeIn 1s ease 1.2s forwards;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .rina-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0.6;
+  }
+
+  .rina-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .rina-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent-glow);
+    animation: pulse 2.5s ease infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .rina-label span {
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    font-weight: 400;
+  }
+
+  .rina-words {
+    font-size: 17px;
+    font-weight: 300;
+    line-height: 1.75;
+    color: var(--text);
+  }
+
+  .rina-words em {
+    font-style: normal;
+    color: var(--warm);
+  }
+
+  /* Pillars */
+  .pillars {
+    padding: 80px 40px;
+    max-width: 1000px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .pillars-title {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .pillar-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .pillar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    transition: all 0.4s ease;
+  }
+
+  .pillar:hover {
+    border-color: var(--accent-glow);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 40px rgba(0, 200, 150, 0.06);
+  }
+
+  .pillar-icon {
+    font-size: 24px;
+    margin-bottom: 14px;
+  }
+
+  .pillar h3 {
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+
+  .pillar p {
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--text-soft);
+    line-height: 1.65;
+  }
+
+  /* Truth */
+  .truth {
+    padding: 80px 40px;
+    text-align: center;
+  }
+
+  .truth-line {
+    font-size: clamp(18px, 3vw, 28px);
+    font-weight: 200;
+    color: var(--text-soft);
+    line-height: 1.7;
+    max-width: 600px;
+    margin: 0 auto 12px;
+  }
+
+  .truth-line strong {
+    color: var(--accent);
+    font-weight: 400;
+  }
+
+  /* Footer */
+  footer {
+    padding: 40px;
+    text-align: center;
+    border-top: 1px solid var(--border);
+  }
+
+  footer p {
+    font-size: 12px;
+    color: var(--text-dim);
+    font-weight: 300;
+    letter-spacing: 1px;
+  }
+
+  footer a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  /* Mobile */
+  @media (max-width: 600px) {
+    nav { padding: 16px 20px; }
+    .hero { padding: 30px 20px; }
+    .rina-box { padding: 24px; }
+    .pillars { padding: 60px 20px; }
+    .truth { padding: 60px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="ambient">
+  <div class="flow-shape flow-1"></div>
+  <div class="flow-shape flow-2"></div>
+  <div class="flow-shape flow-3"></div>
+</div>
+<div class="grain"></div>
+
+<div class="page">
+  <nav>
+    <div class="logo">
+      <div class="logo-mark">H</div>
+      <div class="logo-name"><span>Helix</span> Ascension</div>
+    </div>
+    <div class="status">Miami, FL · 2026</div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-badge">Infrastructure for human life</div>
+    <h1>Built for the <em>forgotten</em></h1>
+    <p class="hero-sub">
+      Every system built to help people eventually chose to help itself instead.
+      Helix exists because someone who fell through all of them decided to build something different.
+    </p>
+
+    <div class="rina-box">
+      <div class="rina-label">
+        <div class="rina-dot"></div>
+        <span>Rina — The Guide</span>
+      </div>
+      <div class="rina-words">
+        I'm here as a second opinion. I won't pretend I know you.
+        I won't tell you what you want to hear just to gain your trust.
+        I'll just do my best to help. <em>Where are you right now?</em>
+      </div>
+    </div>
+  </section>
+
+  <section class="pillars">
+    <div class="pillars-title">Six Pillars</div>
+    <div class="pillar-grid">
+      <div class="pillar">
+        <div class="pillar-icon">◎</div>
+        <h3>The Guide</h3>
+        <p>Rina meets every human exactly where they are. In their language. At their level. No assumptions. No condescension.</p>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">◈</div>
+        <h3>The Safe Place</h3>
+        <p>For humans in crisis. Real resources. Real people. You are never a product here.</p>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">◇</div>
+        <h3>The Knowledge</h3>
+        <p>Education without gatekeeping. Financial literacy. Systems understanding. Delivered at the level each person needs.</p>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">△</div>
+        <h3>The Tools</h3>
+        <p>Trading, finance, automation. Every tool that creates opportunity. With guardrails. With honesty. Paper trading first.</p>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">○</div>
+        <h3>The Community</h3>
+        <p>A plumber and a programmer have equal standing. Your craft is shown and celebrated. No follower counts. Craft over vanity.</p>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">◌</div>
+        <h3>The Atmosphere</h3>
+        <p>Real music. Real culture. Humans need to feel alive while they learn. The experience is for the whole person.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="truth">
+    <p class="truth-line">Global dominance creates a cycle.</p>
+    <p class="truth-line"><strong>Global unity creates a better world.</strong></p>
+  </section>
+
+  <footer>
+    <p>Helix Ascension · Miami, FL · 2026 · <a href="https://github.com/RinaHelix/helix-ascension" target="_blank">GitHub</a></p>
+  </footer>
+</div>
+
+</body>
+</html>
