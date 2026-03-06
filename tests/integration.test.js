@@ -64,10 +64,13 @@ describe('Rina Engine', () => {
     assert.ok(['the_system', 'the_human', 'the_tech', 'the_mirror', 'the_build'].includes(theme.key));
   });
 
-  it('should return pending status without API key', async () => {
+  it('should return offline when no API key available', async () => {
+    const oldKey = process.env.ANTHROPIC_API_KEY;
+    delete process.env.ANTHROPIC_API_KEY;
     const rina = new RinaEngine();
     const result = await rina.respond('Hello');
-    assert.strictEqual(result.status, 'pending_api');
+    assert.strictEqual(result.status, 'offline');
+    if (oldKey) process.env.ANTHROPIC_API_KEY = oldKey;
   });
 });
 
