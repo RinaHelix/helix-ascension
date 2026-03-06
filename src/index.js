@@ -6,6 +6,7 @@ const express = require('express');
 const Governor = require('./governor/governor');
 const { loadCriticalRules } = require('./governor/critical-loader');
 const rinaRoutes = require('./rina/rina-routes');
+const contentRoutes = require('./rina/content-routes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -48,6 +49,7 @@ app.get('/', (req, res) => {
 
 // Rina endpoints
 app.use('/rina', rinaRoutes);
+app.use('/content', contentRoutes);
 
 // Governor endpoints
 app.get('/governor/status', (req, res) => {
