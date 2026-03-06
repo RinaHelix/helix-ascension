@@ -8,6 +8,7 @@ const { loadCriticalRules } = require('./governor/critical-loader');
 const rinaRoutes = require('./rina/rina-routes');
 const contentRoutes = require('./rina/content-routes');
 const cycleRoutes = require('./modules/cycle-routes');
+const connectorRoutes = require('./connectors/connector-routes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -52,6 +53,7 @@ app.get('/', (req, res) => {
 app.use('/rina', rinaRoutes);
 app.use('/content', contentRoutes);
 app.use('/cycles', cycleRoutes);
+app.use('/connect', connectorRoutes);
 
 // Governor endpoints
 app.get('/governor/status', (req, res) => {
