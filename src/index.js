@@ -1,9 +1,11 @@
 // Helix Ascension — Main Entry Point
 // "Infrastructure for human life"
+// "Global dominance creates a cycle. Global unity creates a better world."
 
 const express = require('express');
 const Governor = require('./governor/governor');
 const { loadCriticalRules } = require('./governor/critical-loader');
+const rinaRoutes = require('./rina/rina-routes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -18,10 +20,21 @@ console.log(`[HELIX] CRITICAL.md loaded: ${criticalRules.length} rules active`);
 const governor = new Governor(criticalRules);
 console.log(`[HELIX] Governor initialized — dry_run: ${governor.dryRun}, kill_switch: ${governor.killSwitch}`);
 
+// Check Rina soul
+const fs = require('fs');
+const soulPath = require('path').join(__dirname, '..', 'docs', 'RINA-SOUL.md');
+if (fs.existsSync(soulPath)) {
+  console.log('[HELIX] RINA-SOUL.md loaded. She knows who she is.');
+} else {
+  console.log('[HELIX] Warning: RINA-SOUL.md not found.');
+}
+
 // Health check
 app.get('/', (req, res) => {
   res.json({
     name: 'Helix Ascension',
+    mission: 'Infrastructure for human life. Built for the forgotten.',
+    truth: 'Global dominance creates a cycle. Global unity creates a better world.',
     status: 'operational',
     governor: {
       active: true,
@@ -29,17 +42,18 @@ app.get('/', (req, res) => {
       killSwitch: governor.killSwitch,
       registeredBots: governor.listBots(),
       rulesLoaded: criticalRules.length
-    },
-    message: 'Built for the forgotten.'
+    }
   });
 });
 
-// Governor status endpoint
+// Rina endpoints
+app.use('/rina', rinaRoutes);
+
+// Governor endpoints
 app.get('/governor/status', (req, res) => {
   res.json(governor.getStatus());
 });
 
-// Governor action log
 app.get('/governor/log', (req, res) => {
   res.json(governor.getLog());
 });
@@ -48,7 +62,7 @@ app.get('/governor/log', (req, res) => {
 if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`[HELIX] Ascension running on port ${PORT}`);
-    console.log(`[HELIX] One commit at a time. That is how you change the world.`);
+    console.log(`[HELIX] One commit at a time.`);
   });
 }
 
