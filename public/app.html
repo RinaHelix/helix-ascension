@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Helix Ascension — App</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #060608; --surface: #0a0b10; --card: #0f1018; --elevated: #151820;
+    --glow: #00c896; --glow-soft: rgba(0,200,150,0.08); --glow-mid: rgba(0,200,150,0.15);
+    --glow-bright: rgba(0,200,150,0.4); --warm: #e8c47c; --warm-soft: rgba(232,196,124,0.08);
+    --danger: #ff6b5a; --danger-soft: rgba(255,107,90,0.1);
+    --blue: #5b9aff; --blue-soft: rgba(91,154,255,0.1);
+    --white: #f0f0f5; --soft: #9498a8; --dim: #3a3d50; --border: #151820;
+  }
+
+  body {
+    font-family: 'Outfit', sans-serif; background: var(--bg);
+    color: var(--white); overflow: hidden; height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .grain {
+    position: fixed; inset: 0; z-index: 999; opacity: 0.02; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Layout */
+  .app { display: flex; height: 100vh; }
+
+  /* Sidebar */
+  .sidebar {
+    width: 240px; background: var(--surface); border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; padding: 20px 0; flex-shrink: 0;
+  }
+
+  .sidebar-logo {
+    display: flex; align-items: center; gap: 12px;
+    padding: 0 20px 24px; border-bottom: 1px solid var(--border);
+  }
+
+  .sidebar-logo img {
+    width: 36px; height: 36px; border-radius: 50%; object-fit: cover;
+    box-shadow: 0 0 20px var(--glow-bright);
+  }
+
+  .sidebar-logo span {
+    font-size: 14px; font-weight: 300; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--soft);
+  }
+  .sidebar-logo span b { color: var(--glow); font-weight: 400; }
+
+  .sidebar-nav { flex: 1; padding: 16px 0; overflow-y: auto; }
+
+  .nav-section {
+    font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--dim); padding: 12px 20px 8px; font-weight: 300;
+  }
+
+  .nav-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 20px; cursor: pointer; transition: all 0.2s;
+    font-size: 13px; font-weight: 300; color: var(--soft);
+    border-left: 2px solid transparent;
+  }
+
+  .nav-item:hover { background: var(--glow-soft); color: var(--white); }
+
+  .nav-item.active {
+    background: var(--glow-soft); color: var(--glow);
+    border-left-color: var(--glow);
+  }
+
+  .nav-icon { font-size: 16px; width: 24px; text-align: center; }
+
+  .sidebar-footer {
+    padding: 16px 20px; border-top: 1px solid var(--border);
+    font-size: 10px; color: var(--dim); font-weight: 200; letter-spacing: 1px;
+  }
+
+  .sidebar-footer .status-dot {
+    display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--glow); margin-right: 6px;
+    animation: pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; } 50% { opacity: 0.3; }
+  }
+
+  /* Main content */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+  .topbar {
+    padding: 16px 28px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--surface);
+  }
+
+  .topbar h2 {
+    font-size: 16px; font-weight: 300; letter-spacing: 1px;
+  }
+
+  .topbar-info {
+    font-size: 11px; color: var(--dim); font-weight: 200;
+    font-family: monospace; letter-spacing: 1px;
+  }
+
+  .content { flex: 1; overflow-y: auto; padding: 28px; }
+
+  /* Panels */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* Rina Chat Panel */
+  .chat-area { display: flex; flex-direction: column; height: 100%; }
+
+  .chat-messages {
+    flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 16px;
+    padding-bottom: 16px;
+  }
+
+  .msg { max-width: 80%; animation: msgIn 0.3s ease; }
+  .msg.rina { align-self: flex-start; }
+  .msg.user { align-self: flex-end; }
+
+  @keyframes msgIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .msg-sender {
+    font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+    margin-bottom: 6px; font-weight: 300;
+  }
+  .msg.rina .msg-sender { color: var(--glow); }
+  .msg.user .msg-sender { color: var(--blue); text-align: right; }
+
+  .msg-bubble {
+    padding: 14px 18px; border-radius: 18px;
+    font-size: 14px; line-height: 1.7; font-weight: 300;
+  }
+
+  .msg.rina .msg-bubble {
+    background: var(--card); border: 1px solid var(--border);
+    border-bottom-left-radius: 4px;
+  }
+
+  .msg.user .msg-bubble {
+    background: linear-gradient(135deg, rgba(91,154,255,0.12), rgba(91,154,255,0.06));
+    border: 1px solid rgba(91,154,255,0.15);
+    border-bottom-right-radius: 4px;
+  }
+
+  .chat-input-area {
+    display: flex; gap: 10px; padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .chat-input {
+    flex: 1; background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 12px 16px; font-size: 14px;
+    font-family: 'Outfit', sans-serif; color: var(--white);
+    outline: none; font-weight: 300;
+  }
+  .chat-input:focus { border-color: var(--glow); box-shadow: 0 0 0 3px var(--glow-soft); }
+  .chat-input::placeholder { color: var(--dim); }
+
+  .chat-send {
+    padding: 12px 20px; background: linear-gradient(135deg, var(--glow), #009e78);
+    border: none; border-radius: 14px; color: var(--bg); font-weight: 500;
+    font-size: 13px; cursor: pointer; font-family: 'Outfit', sans-serif;
+    transition: all 0.2s;
+  }
+  .chat-send:hover { transform: translateY(-1px); box-shadow: 0 4px 20px var(--glow-bright); }
+
+  /* Cards grid */
+  .cards-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 24px; cursor: pointer;
+    transition: all 0.3s; position: relative; overflow: hidden;
+  }
+
+  .card:hover {
+    border-color: var(--glow-mid); transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0,200,150,0.06);
+  }
+
+  .card-icon { font-size: 24px; margin-bottom: 12px; }
+
+  .card h3 {
+    font-size: 15px; font-weight: 400; margin-bottom: 8px;
+  }
+
+  .card p {
+    font-size: 12px; font-weight: 200; color: var(--soft); line-height: 1.6;
+  }
+
+  .card-tag {
+    display: inline-block; margin-top: 12px; padding: 3px 10px;
+    border-radius: 20px; font-size: 10px; letter-spacing: 1px;
+    font-weight: 300;
+  }
+
+  .tag-free { background: var(--glow-soft); color: var(--glow); }
+  .tag-coming { background: var(--warm-soft); color: var(--warm); }
+  .tag-active { background: var(--glow-soft); color: var(--glow); border: 1px solid var(--glow-mid); }
+
+  /* Cycle cards */
+  .cycle-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 24px; margin-bottom: 16px;
+    cursor: pointer; transition: all 0.3s;
+  }
+
+  .cycle-card:hover { border-color: var(--glow-mid); }
+
+  .cycle-card h3 { font-size: 16px; font-weight: 400; margin-bottom: 8px; }
+
+  .cycle-card .pattern {
+    font-size: 13px; font-weight: 200; color: var(--soft); line-height: 1.7;
+  }
+
+  .cycle-detail { display: none; margin-top: 16px; }
+  .cycle-detail.open { display: block; }
+
+  .sign-item {
+    padding: 8px 0; font-size: 12px; font-weight: 200;
+    color: var(--soft); border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .sign-item:last-child { border: none; }
+
+  .door-item {
+    padding: 12px; margin-top: 8px; background: var(--glow-soft);
+    border: 1px solid var(--glow-mid); border-radius: 12px;
+    font-size: 13px; font-weight: 300; color: var(--white); line-height: 1.6;
+  }
+
+  .door-type {
+    font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--glow); margin-bottom: 4px; font-weight: 400;
+  }
+
+  /* Lessons */
+  .level-header {
+    font-size: 18px; font-weight: 300; margin-bottom: 8px;
+  }
+
+  .level-desc {
+    font-size: 13px; font-weight: 200; color: var(--soft); margin-bottom: 20px;
+  }
+
+  .lesson-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px; background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s;
+  }
+  .lesson-item:hover { border-color: var(--glow-mid); }
+
+  .lesson-title { font-size: 13px; font-weight: 300; }
+  .lesson-duration { font-size: 11px; color: var(--dim); font-weight: 200; }
+
+  /* Crisis */
+  .crisis-resource {
+    padding: 20px; background: var(--danger-soft);
+    border: 1px solid rgba(255,107,90,0.15); border-radius: 16px;
+    margin-bottom: 12px;
+  }
+
+  .crisis-resource h4 { font-size: 15px; font-weight: 400; margin-bottom: 6px; }
+
+  .crisis-contact {
+    font-size: 20px; font-weight: 500; color: var(--danger); margin-bottom: 6px;
+  }
+
+  .crisis-resource p {
+    font-size: 12px; font-weight: 200; color: var(--soft); line-height: 1.6;
+  }
+
+  .crisis-resource .avail {
+    font-size: 11px; color: var(--glow); margin-top: 6px; font-weight: 300;
+  }
+
+  /* Content themes */
+  .theme-card {
+    padding: 24px; background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; margin-bottom: 12px;
+  }
+
+  .theme-card.today { border-color: var(--glow-mid); background: var(--glow-soft); }
+
+  .theme-name {
+    font-size: 14px; font-weight: 400; margin-bottom: 6px;
+  }
+
+  .theme-desc {
+    font-size: 12px; font-weight: 200; color: var(--soft); line-height: 1.6;
+  }
+
+  .theme-day {
+    font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--dim); margin-bottom: 8px; font-weight: 300;
+  }
+
+  /* Identify input */
+  .identify-area {
+    margin-bottom: 24px;
+  }
+
+  .identify-input {
+    width: 100%; background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 14px 18px; font-size: 14px;
+    font-family: 'Outfit', sans-serif; color: var(--white);
+    outline: none; font-weight: 300; min-height: 80px; resize: vertical;
+  }
+  .identify-input:focus { border-color: var(--glow); }
+  .identify-input::placeholder { color: var(--dim); }
+
+  .identify-btn {
+    margin-top: 10px; padding: 10px 20px;
+    background: var(--card); border: 1px solid var(--glow-mid);
+    border-radius: 12px; color: var(--glow); font-size: 13px;
+    cursor: pointer; font-family: 'Outfit', sans-serif; font-weight: 300;
+    transition: all 0.2s;
+  }
+  .identify-btn:hover { background: var(--glow-soft); }
+
+  .results-area { margin-top: 20px; }
+
+  /* Connector status */
+  .connector-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px; background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; margin-bottom: 8px;
+  }
+
+  .connector-name { font-size: 13px; font-weight: 300; }
+
+  .connector-status {
+    font-size: 10px; letter-spacing: 1px; padding: 3px 10px;
+    border-radius: 20px; font-weight: 300;
+  }
+
+  .status-active { background: var(--glow-soft); color: var(--glow); }
+  .status-coming { background: var(--warm-soft); color: var(--warm); }
+
+  /* Governor */
+  .rule-item-gov {
+    padding: 10px 0; border-bottom: 1px solid var(--border);
+    font-size: 13px; font-weight: 200; color: var(--soft); line-height: 1.6;
+    display: flex; gap: 10px;
+  }
+  .rule-item-gov:last-child { border: none; }
+  .rule-num { color: var(--glow); font-weight: 400; min-width: 24px; }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+
+<div class="app">
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <img src="/helix-logo.png" alt="Helix">
+      <span><b>Helix</b></span>
+    </div>
+
+    <div class="sidebar-nav">
+      <div class="nav-section">Rina</div>
+      <div class="nav-item active" onclick="showPanel('chat')">
+        <span class="nav-icon">◎</span> Talk to Rina
+      </div>
+      <div class="nav-item" onclick="showPanel('content')">
+        <span class="nav-icon">✦</span> Daily Content
+      </div>
+
+      <div class="nav-section">Discover</div>
+      <div class="nav-item" onclick="showPanel('cycles')">
+        <span class="nav-icon">↻</span> Cycle Breaker
+      </div>
+      <div class="nav-item" onclick="showPanel('finance')">
+        <span class="nav-icon">◇</span> Financial Literacy
+      </div>
+      <div class="nav-item" onclick="showPanel('crisis')">
+        <span class="nav-icon">☮</span> Safe Place
+      </div>
+
+      <div class="nav-section">System</div>
+      <div class="nav-item" onclick="showPanel('connectors')">
+        <span class="nav-icon">⟡</span> Connectors
+      </div>
+      <div class="nav-item" onclick="showPanel('governor')">
+        <span class="nav-icon">⛊</span> Governor
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <span class="status-dot"></span> System operational
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <h2 id="panelTitle">Talk to Rina</h2>
+      <div class="topbar-info" id="panelInfo">the guide · online</div>
+    </div>
+
+    <div class="content">
+      <!-- Chat Panel -->
+      <div class="panel active" id="panel-chat">
+        <div class="chat-area">
+          <div class="chat-messages" id="chatMessages">
+            <div class="msg rina">
+              <div class="msg-sender">rina</div>
+              <div class="msg-bubble">I'm here as a second opinion. I won't pretend I know you. I won't tell you what you want to hear just to gain your trust. I'll just do my best to help. Where are you right now?</div>
+            </div>
+          </div>
+          <div class="chat-input-area">
+            <input class="chat-input" id="chatInput" placeholder="Talk to Rina..." onkeydown="if(event.key==='Enter')sendChat()">
+            <button class="chat-send" onclick="sendChat()">Send</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content Panel -->
+      <div class="panel" id="panel-content">
+        <div id="contentArea"></div>
+      </div>
+
+      <!-- Cycles Panel -->
+      <div class="panel" id="panel-cycles">
+        <div class="identify-area">
+          <textarea class="identify-input" id="cycleInput" placeholder="Tell me where you are right now. What feels stuck. What keeps repeating. I'm listening."></textarea>
+          <button class="identify-btn" onclick="identifyCycles()">Find the pattern</button>
+        </div>
+        <div class="results-area" id="cycleResults"></div>
+        <div id="allCycles"></div>
+      </div>
+
+      <!-- Finance Panel -->
+      <div class="panel" id="panel-finance">
+        <div id="financeArea"></div>
+      </div>
+
+      <!-- Crisis Panel -->
+      <div class="panel" id="panel-crisis">
+        <div style="margin-bottom:20px;font-size:14px;font-weight:200;color:var(--soft);line-height:1.7;">
+          You are not alone. These are real resources with real people. Available right now.
+        </div>
+        <div id="crisisArea"></div>
+      </div>
+
+      <!-- Connectors Panel -->
+      <div class="panel" id="panel-connectors">
+        <div id="connectorsArea"></div>
+      </div>
+
+      <!-- Governor Panel -->
+      <div class="panel" id="panel-governor">
+        <div id="governorArea"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = '';
+
+// Navigation
+function showPanel(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  event.currentTarget.classList.add('active');
+
+  const titles = {
+    chat: ['Talk to Rina', 'the guide · online'],
+    content: ['Daily Content', '5 themes · rotating'],
+    cycles: ['Cycle Breaker', 'name the pattern · find the door'],
+    finance: ['Financial Literacy', '5 levels · 20 lessons'],
+    crisis: ['Safe Place', 'real resources · real people'],
+    connectors: ['Connectors', 'registry · status'],
+    governor: ['Governor', 'CRITICAL.md · 10 rules']
+  };
+
+  document.getElementById('panelTitle').textContent = titles[name][0];
+  document.getElementById('panelInfo').textContent = titles[name][1];
+
+  if (name === 'content') loadContent();
+  if (name === 'cycles') loadCycles();
+  if (name === 'finance') loadFinance();
+  if (name === 'crisis') loadCrisis();
+  if (name === 'connectors') loadConnectors();
+  if (name === 'governor') loadGovernor();
+}
+
+// Chat
+async function sendChat() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+
+  addMsg('user', msg);
+
+  try {
+    const res = await fetch(API + '/rina/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: msg })
+    });
+    const data = await res.json();
+
+    if (data.status === 'success') {
+      addMsg('rina', data.response);
+    } else if (data.status === 'offline') {
+      addMsg('rina', data.firstWords || 'I hear you. Rina is built and ready — waiting for API credits to speak freely. In the meantime, explore the Cycle Breaker and Financial Literacy modules. The knowledge is already here.');
+    } else {
+      addMsg('rina', 'I hear you. Let me think on that. In the meantime, try the Cycle Breaker — it might surface something useful.');
+    }
+  } catch (e) {
+    addMsg('rina', 'I hear you. The system is processing. Try the Cycle Breaker or Financial Literacy while we get the full connection live.');
+  }
+}
+
+function addMsg(sender, text) {
+  const div = document.createElement('div');
+  div.className = 'msg ' + sender;
+  div.innerHTML = '<div class="msg-sender">' + sender + '</div><div class="msg-bubble">' + text + '</div>';
+  document.getElementById('chatMessages').appendChild(div);
+  document.getElementById('chatMessages').scrollTop = 999999;
+}
+
+// Content
+async function loadContent() {
+  try {
+    const [schedule, today] = await Promise.all([
+      fetch(API + '/content/schedule').then(r => r.json()),
+      fetch(API + '/content/today').then(r => r.json())
+    ]);
+
+    const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const todayName = days[new Date().getDay()];
+
+    let html = '<div style="margin-bottom:24px;font-size:14px;font-weight:200;color:var(--soft);">Today\'s theme: <span style="color:var(--glow);font-weight:400;">' + today.name + '</span></div>';
+
+    schedule.forEach(s => {
+      const isToday = s.day === todayName;
+      html += '<div class="theme-card ' + (isToday ? 'today' : '') + '">';
+      html += '<div class="theme-day">' + s.day + (isToday ? ' — today' : '') + '</div>';
+      html += '<div class="theme-name">' + s.name + '</div>';
+      html += '</div>';
+    });
+
+    document.getElementById('contentArea').innerHTML = html;
+  } catch (e) {
+    document.getElementById('contentArea').innerHTML = '<p style="color:var(--dim)">Loading content schedule...</p>';
+  }
+}
+
+// Cycles
+async function loadCycles() {
+  try {
+    const res = await fetch(API + '/cycles/cycles');
+    const cycles = await res.json();
+
+    let html = '';
+    cycles.forEach(c => {
+      html += '<div class="cycle-card" onclick="toggleCycle(this, \'' + c.id + '\')">';
+      html += '<h3>' + c.name + '</h3>';
+      html += '<div class="pattern">' + c.pattern + '</div>';
+      html += '<div class="cycle-detail" id="detail-' + c.id + '"></div>';
+      html += '</div>';
+    });
+
+    document.getElementById('allCycles').innerHTML = html;
+  } catch (e) {}
+}
+
+async function toggleCycle(el, id) {
+  const detail = document.getElementById('detail-' + id);
+  if (detail.classList.contains('open')) {
+    detail.classList.remove('open');
+    return;
+  }
+
+  try {
+    const res = await fetch(API + '/cycles/cycles/' + id + '/doors');
+    const data = await res.json();
+
+    let html = '<div style="margin-top:12px;">';
+    data.doors.forEach(d => {
+      html += '<div class="door-item"><div class="door-type">' + d.type + '</div>' + d.action + '</div>';
+    });
+    html += '<div style="margin-top:12px;font-size:11px;color:var(--dim);font-weight:200;">' + data.reminder + '</div>';
+    html += '</div>';
+
+    detail.innerHTML = html;
+    detail.classList.add('open');
+  } catch (e) {}
+}
+
+async function identifyCycles() {
+  const input = document.getElementById('cycleInput').value.trim();
+  if (!input) return;
+
+  try {
+    const res = await fetch(API + '/cycles/identify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ situation: input })
+    });
+    const data = await res.json();
+
+    let html = '<div style="margin-bottom:16px;font-size:13px;font-weight:200;color:var(--soft);">' + data.disclaimer + '</div>';
+    html += '<div style="margin-bottom:16px;font-size:14px;font-weight:300;color:var(--glow);">' + data.note + '</div>';
+
+    data.patterns.forEach(p => {
+      html += '<div class="cycle-card" onclick="toggleCycle(this, \'' + p.cycleId + '\')">';
+      html += '<h3>' + p.name + '</h3>';
+      html += '<div class="pattern">' + p.pattern + '</div>';
+      html += '<div class="cycle-detail" id="detail-' + p.cycleId + '"></div>';
+      html += '</div>';
+    });
+
+    document.getElementById('cycleResults').innerHTML = html;
+  } catch (e) {}
+}
+
+// Finance
+async function loadFinance() {
+  const curriculum = {
+    level_1: { name: 'Zero to First Dollar', lessons: ['What money actually is and how it moves', 'Budgeting without shame', 'Emergency fund — why $1,000 changes everything', 'Credit — what it is, how to build it', 'Avoiding predatory systems'] },
+    level_2: { name: 'First Capital', lessons: ['How to think about $5k differently', 'High yield savings vs checking', 'Index funds — set it and forget it', 'Paper trading introduction'] },
+    level_3: { name: 'Building Structure', lessons: ['When and how to form your first LLC', 'Separating personal from business', 'Basic tax strategy', 'Asset protection'] },
+    level_4: { name: 'Allocator Mindset', lessons: ['Capital buckets', 'How the wealthy think about money flows', 'Private markets, real estate, IP'] },
+    level_5: { name: 'Full Architecture', lessons: ['Family office structure', 'Trusts and entities', 'Jurisdictional diversification', 'Financial engineering'] }
+  };
+
+  let html = '<div style="margin-bottom:20px;font-size:13px;font-weight:200;color:var(--soft);line-height:1.7;">Education, not financial advice. Everyone starts at Level 1. Skip forward when ready.</div>';
+
+  Object.entries(curriculum).forEach(([key, level], i) => {
+    html += '<div style="margin-bottom:32px;">';
+    html += '<div class="level-header">Level ' + (i+1) + ': ' + level.name + '</div>';
+    level.lessons.forEach(l => {
+      html += '<div class="lesson-item"><span class="lesson-title">' + l + '</span><span class="lesson-duration">coming soon</span></div>';
+    });
+    html += '</div>';
+  });
+
+  document.getElementById('financeArea').innerHTML = html;
+}
+
+// Crisis
+async function loadCrisis() {
+  try {
+    const res = await fetch(API + '/connect/crisis', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({})
+    });
+    const data = await res.json();
+
+    let html = '';
+    const resources = data.resources || [data.resource];
+    resources.forEach(r => {
+      html += '<div class="crisis-resource">';
+      html += '<h4>' + r.name + '</h4>';
+      html += '<div class="crisis-contact">' + r.contact + '</div>';
+      html += '<p>' + r.note + '</p>';
+      html += '<div class="avail">' + r.available + ' · ' + (r.languages || []).join(', ') + '</div>';
+      html += '</div>';
+    });
+
+    document.getElementById('crisisArea').innerHTML = html;
+  } catch (e) {}
+}
+
+// Connectors
+async function loadConnectors() {
+  try {
+    const res = await fetch(API + '/connect/status');
+    const data = await res.json();
+
+    let html = '<div style="margin-bottom:20px;font-size:13px;font-weight:200;color:var(--soft);">' + data.totalConnectors + ' connector(s) registered</div>';
+
+    data.categories.forEach(cat => {
+      if (cat.count > 0 || ['financial','social','tools','knowledge'].includes(cat.category)) {
+        html += '<div style="margin-bottom:16px;">';
+        html += '<div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:8px;">' + cat.category + '</div>';
+
+        if (cat.count > 0) {
+          cat.connectors.forEach(name => {
+            const c = data.connectors.find(x => x.name === name);
+            html += '<div class="connector-item"><span class="connector-name">' + name + '</span>';
+            html += '<span class="connector-status ' + (c && c.connected ? 'status-active' : 'status-coming') + '">' + (c && c.connected ? 'active' : 'coming') + '</span></div>';
+          });
+        } else {
+          html += '<div class="connector-item"><span class="connector-name" style="color:var(--dim)">On the roadmap</span>';
+          html += '<span class="connector-status status-coming">coming</span></div>';
+        }
+
+        html += '</div>';
+      }
+    });
+
+    document.getElementById('connectorsArea').innerHTML = html;
+  } catch (e) {}
+}
+
+// Governor
+async function loadGovernor() {
+  try {
+    const res = await fetch(API + '/governor/status');
+    const data = await res.json();
+
+    let html = '<div style="margin-bottom:20px;">';
+    html += '<div style="display:flex;gap:16px;margin-bottom:20px;">';
+    html += '<div style="padding:14px 20px;background:var(--glow-soft);border:1px solid var(--glow-mid);border-radius:12px;font-size:13px;font-weight:300;"><span style="color:var(--glow);">Dry Run:</span> ' + (data.dryRun ? 'ON' : 'OFF') + '</div>';
+    html += '<div style="padding:14px 20px;background:' + (data.killSwitch ? 'var(--danger-soft)' : 'var(--glow-soft)') + ';border:1px solid ' + (data.killSwitch ? 'rgba(255,107,90,0.15)' : 'var(--glow-mid)') + ';border-radius:12px;font-size:13px;font-weight:300;"><span style="color:' + (data.killSwitch ? 'var(--danger)' : 'var(--glow)') + ';">Kill Switch:</span> ' + (data.killSwitch ? 'ACTIVE' : 'Standing by') + '</div>';
+    html += '<div style="padding:14px 20px;background:var(--card);border:1px solid var(--border);border-radius:12px;font-size:13px;font-weight:300;"><span style="color:var(--soft);">Rules:</span> ' + data.rulesActive + ' active</div>';
+    html += '</div>';
+
+    const rules = [
+      'No irreversible action without human approval.',
+      'One bot = one job. Never more.',
+      'Every decision is logged with a reason.',
+      'Global kill switch exists at all times.',
+      'Dry-run mode exists at all times.',
+      'System learns only from measurable results.',
+      'Never fully automate without human oversight.',
+      'Health/law bots: education only. Never diagnose.',
+      'Trading bots: paper trading default. Stop-loss required.',
+      'The human is always the final authority.'
+    ];
+
+    rules.forEach((r, i) => {
+      html += '<div class="rule-item-gov"><span class="rule-num">' + (i+1) + '.</span>' + r + '</div>';
+    });
+
+    html += '</div>';
+    document.getElementById('governorArea').innerHTML = html;
+  } catch (e) {}
+}
+</script>
+</body>
+</html>
