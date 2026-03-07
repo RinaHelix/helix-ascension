@@ -1,6 +1,6 @@
 # Helix Ascension
 
-**Infrastructure for human life. Built for the forgotten. Est. March 2026.**
+**Infrastructure for humanity. Built for the forgotten. Est. March 2026.**
 
 Miami, FL
 

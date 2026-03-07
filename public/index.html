@@ -4,455 +4,480 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Helix Ascension</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   :root {
-    --bg: #0b0c0f;
-    --surface: #111318;
-    --card: #16181f;
-    --accent: #00c896;
-    --accent-soft: #00c89622;
-    --accent-glow: #00c89644;
-    --warm: #f5c77e;
-    --warm-soft: #f5c77e18;
-    --text: #e4e5ea;
-    --text-soft: #9496a3;
-    --text-dim: #4e5064;
-    --border: #1e2030;
+    --bg: #060608;
+    --surface: #0a0b10;
+    --card: #0f1018;
+    --glow: #00c896;
+    --glow-soft: rgba(0,200,150,0.08);
+    --glow-mid: rgba(0,200,150,0.15);
+    --glow-bright: rgba(0,200,150,0.4);
+    --warm: #e8c47c;
+    --white: #f0f0f5;
+    --soft: #9498a8;
+    --dim: #3a3d50;
+    --border: #151820;
   }
 
   body {
     font-family: 'Outfit', sans-serif;
     background: var(--bg);
-    color: var(--text);
+    color: var(--white);
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
   }
 
-  /* Ambient background — Zaha-inspired flowing forms */
   .ambient {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    overflow: hidden;
-    pointer-events: none;
+    position: fixed; inset: 0; z-index: 0;
+    pointer-events: none; overflow: hidden;
   }
 
-  .flow-shape {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(120px);
-    opacity: 0.35;
-    animation: drift 20s ease-in-out infinite;
+  .fluid {
+    position: absolute; border-radius: 50%; filter: blur(150px);
   }
 
-  .flow-1 {
-    width: 600px;
-    height: 600px;
-    background: radial-gradient(circle, #00c89620, transparent 70%);
-    top: -10%;
-    left: -10%;
-    animation-duration: 25s;
+  .fluid-1 {
+    width: 800px; height: 800px;
+    background: radial-gradient(circle, rgba(0,200,150,0.07), transparent 70%);
+    top: -20%; left: -15%;
+    animation: breathe 20s ease-in-out infinite;
   }
 
-  .flow-2 {
-    width: 500px;
-    height: 500px;
-    background: radial-gradient(circle, #f5c77e12, transparent 70%);
-    bottom: -15%;
-    right: -10%;
-    animation-duration: 30s;
-    animation-delay: -5s;
+  .fluid-2 {
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(232,196,124,0.05), transparent 70%);
+    bottom: -20%; right: -10%;
+    animation: breathe 25s ease-in-out infinite reverse;
   }
 
-  .flow-3 {
-    width: 400px;
-    height: 400px;
-    background: radial-gradient(circle, #00c89610, transparent 70%);
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    animation-duration: 35s;
-    animation-delay: -10s;
+  .fluid-3 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(0,200,150,0.04), transparent 70%);
+    top: 40%; left: 40%;
+    animation: breathe 30s ease-in-out infinite 5s;
   }
 
-  @keyframes drift {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    25% { transform: translate(30px, -20px) scale(1.05); }
-    50% { transform: translate(-20px, 30px) scale(0.95); }
-    75% { transform: translate(20px, 20px) scale(1.02); }
+  @keyframes breathe {
+    0%, 100% { transform: translate(0, 0) scale(1); opacity: 1; }
+    33% { transform: translate(40px, -30px) scale(1.1); opacity: 0.7; }
+    66% { transform: translate(-30px, 40px) scale(0.9); opacity: 1; }
   }
 
-  /* Grain texture */
   .grain {
-    position: fixed;
-    inset: 0;
-    z-index: 1;
-    opacity: 0.025;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    position: fixed; inset: 0; z-index: 1; opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     pointer-events: none;
   }
 
-  /* Content */
-  .page {
-    position: relative;
-    z-index: 2;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+  .flow-lines {
+    position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0.04;
+  }
+  .flow-lines svg { width: 100%; height: 100%; }
+
+  .page { position: relative; z-index: 2; }
+
+  @keyframes emerge {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   /* Nav */
   nav {
     padding: 24px 40px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    display: flex; align-items: center; justify-content: space-between;
+    opacity: 0; animation: emerge 1.5s ease 0.2s forwards;
   }
 
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+  .logo { display: flex; align-items: center; gap: 14px; }
+
+  .logo-img {
+    width: 44px; height: 44px; border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 0 30px var(--glow-bright), 0 0 60px var(--glow-soft);
+    animation: logoPulse 4s ease-in-out infinite;
   }
 
-  .logo-mark {
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, var(--accent), #009e78);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    font-size: 18px;
-    color: var(--bg);
-    box-shadow: 0 0 30px var(--accent-glow);
+  @keyframes logoPulse {
+    0%, 100% { box-shadow: 0 0 30px var(--glow-bright), 0 0 60px var(--glow-soft); }
+    50% { box-shadow: 0 0 50px var(--glow-bright), 0 0 100px var(--glow-mid); }
   }
 
   .logo-name {
-    font-size: 18px;
-    font-weight: 500;
-    letter-spacing: 3px;
-    text-transform: uppercase;
+    font-size: 16px; font-weight: 300;
+    letter-spacing: 4px; text-transform: uppercase; color: var(--soft);
   }
+  .logo-name span { color: var(--glow); font-weight: 400; }
 
-  .logo-name span { color: var(--accent); }
-
-  nav .status {
-    font-size: 12px;
-    color: var(--text-dim);
-    font-weight: 300;
-    letter-spacing: 1px;
+  nav .nav-status {
+    font-size: 11px; color: var(--dim); font-weight: 200; letter-spacing: 2px;
   }
 
   /* Hero */
   .hero {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 40px;
-    max-width: 800px;
-    margin: 0 auto;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 40px 24px;
   }
 
-  .hero-badge {
-    font-size: 11px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--accent);
-    font-weight: 400;
-    margin-bottom: 32px;
-    opacity: 0;
-    animation: fadeIn 1s ease 0.3s forwards;
+  .hero-tag {
+    font-size: 11px; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--glow); font-weight: 300; margin-bottom: 32px;
+    opacity: 0; animation: emerge 1.5s ease 0.6s forwards;
   }
 
   .hero h1 {
-    font-size: clamp(36px, 6vw, 64px);
-    font-weight: 200;
-    line-height: 1.15;
-    margin-bottom: 28px;
-    opacity: 0;
-    animation: fadeIn 1s ease 0.6s forwards;
+    font-size: clamp(32px, 6vw, 72px); font-weight: 100;
+    line-height: 1.15; margin-bottom: 24px; max-width: 700px;
+    opacity: 0; animation: emerge 1.5s ease 0.9s forwards;
   }
-
-  .hero h1 em {
-    font-style: normal;
-    color: var(--accent);
-    font-weight: 400;
-  }
+  .hero h1 em { font-style: normal; font-weight: 300; color: var(--glow); }
 
   .hero-sub {
-    font-size: clamp(16px, 2.2vw, 20px);
-    font-weight: 300;
-    color: var(--text-soft);
-    line-height: 1.7;
-    max-width: 580px;
-    margin-bottom: 48px;
-    opacity: 0;
-    animation: fadeIn 1s ease 0.9s forwards;
+    font-size: clamp(15px, 2vw, 19px); font-weight: 200;
+    color: var(--soft); line-height: 1.8; max-width: 520px; margin-bottom: 64px;
+    opacity: 0; animation: emerge 1.5s ease 1.2s forwards;
   }
 
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Rina intro */
-  .rina-box {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 32px 36px;
-    max-width: 540px;
-    width: 100%;
-    text-align: left;
-    opacity: 0;
-    animation: fadeIn 1s ease 1.2s forwards;
+  /* Rina Transformation — hologram to human */
+  .rina-transform {
     position: relative;
-    overflow: hidden;
+    width: 280px; height: 280px;
+    margin-bottom: 48px;
+    opacity: 0; animation: emerge 2s ease 1.5s forwards;
   }
 
-  .rina-box::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--accent), transparent);
-    opacity: 0.6;
-  }
-
-  .rina-label {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 16px;
-  }
-
-  .rina-dot {
-    width: 8px;
-    height: 8px;
+  .rina-transform img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
     border-radius: 50%;
-    background: var(--accent);
-    box-shadow: 0 0 12px var(--accent-glow);
-    animation: pulse 2.5s ease infinite;
+    border: 2px solid rgba(0,200,150,0.15);
+    box-shadow: 0 0 60px var(--glow-soft);
+  }
+
+  .rina-holo {
+    z-index: 2;
+    animation: holoFade 8s ease-in-out infinite;
+  }
+
+  .rina-real {
+    z-index: 1;
+    filter: saturate(0.9);
+  }
+
+  @keyframes holoFade {
+    0%, 30% { opacity: 1; filter: brightness(1) hue-rotate(0deg); }
+    45% { opacity: 0.5; filter: brightness(1.2) hue-rotate(10deg); }
+    55%, 85% { opacity: 0; filter: brightness(1.5) hue-rotate(20deg); }
+    100% { opacity: 1; filter: brightness(1) hue-rotate(0deg); }
+  }
+
+  .rina-glow-ring {
+    position: absolute; inset: -8px;
+    border-radius: 50%;
+    border: 1px solid var(--glow-mid);
+    animation: ringPulse 4s ease-in-out infinite;
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  @keyframes ringPulse {
+    0%, 100% { transform: scale(1); opacity: 0.4; }
+    50% { transform: scale(1.05); opacity: 0.8; }
+  }
+
+  .rina-label-below {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--dim);
+    font-weight: 200;
+  }
+
+  /* Rina Card */
+  .rina-container {
+    max-width: 500px; width: 100%;
+    opacity: 0; animation: emerge 1.5s ease 2.2s forwards;
+  }
+
+  .rina-card {
+    background: linear-gradient(135deg, rgba(15,16,24,0.9), rgba(10,11,16,0.95));
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(0,200,150,0.1);
+    border-radius: 24px; padding: 36px;
+    text-align: left; position: relative; overflow: hidden;
+  }
+
+  .rina-card::before {
+    content: ''; position: absolute;
+    top: -1px; left: 20%; right: 20%; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--glow), transparent);
+    opacity: 0.5;
+  }
+
+  .rina-card::after {
+    content: ''; position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(ellipse at top, var(--glow-soft), transparent 60%);
+    pointer-events: none;
+  }
+
+  .rina-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 20px; position: relative; z-index: 1;
+  }
+
+  .rina-pulse {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--glow);
+    box-shadow: 0 0 12px var(--glow-bright);
+    animation: pulse 3s ease-in-out infinite;
   }
 
   @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.9); }
   }
 
-  .rina-label span {
-    font-size: 12px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    font-weight: 400;
+  .rina-header span {
+    font-size: 11px; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--dim); font-weight: 300;
   }
 
   .rina-words {
-    font-size: 17px;
-    font-weight: 300;
-    line-height: 1.75;
-    color: var(--text);
+    font-size: 16px; font-weight: 200; line-height: 1.85;
+    color: var(--white); position: relative; z-index: 1;
   }
-
-  .rina-words em {
-    font-style: normal;
-    color: var(--warm);
-  }
+  .rina-words em { font-style: normal; color: var(--warm); font-weight: 300; }
 
   /* Pillars */
   .pillars {
-    padding: 80px 40px;
-    max-width: 1000px;
-    margin: 0 auto;
-    width: 100%;
+    padding: 100px 40px; max-width: 1100px; margin: 0 auto;
   }
 
-  .pillars-title {
-    font-size: 11px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    text-align: center;
-    margin-bottom: 48px;
+  .pillars-label {
+    font-size: 11px; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--dim); text-align: center; margin-bottom: 56px; font-weight: 200;
   }
 
   .pillar-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 16px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
   }
 
   .pillar {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 28px;
-    transition: all 0.4s ease;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 20px; padding: 32px;
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    position: relative; overflow: hidden;
   }
 
-  .pillar:hover {
-    border-color: var(--accent-glow);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 40px rgba(0, 200, 150, 0.06);
+  .pillar::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: radial-gradient(ellipse at top left, var(--glow-soft), transparent 60%);
+    opacity: 0; transition: opacity 0.5s;
   }
 
-  .pillar-icon {
-    font-size: 24px;
-    margin-bottom: 14px;
-  }
+  .pillar:hover { border-color: rgba(0,200,150,0.15); transform: translateY(-4px); }
+  .pillar:hover::before { opacity: 1; }
+
+  .pillar-symbol { font-size: 28px; margin-bottom: 16px; opacity: 0.6; }
 
   .pillar h3 {
-    font-size: 15px;
-    font-weight: 500;
-    margin-bottom: 8px;
-    color: var(--text);
+    font-size: 15px; font-weight: 400; margin-bottom: 10px;
+    position: relative; z-index: 1;
   }
 
   .pillar p {
-    font-size: 13px;
-    font-weight: 300;
-    color: var(--text-soft);
-    line-height: 1.65;
+    font-size: 13px; font-weight: 200; color: var(--soft);
+    line-height: 1.7; position: relative; z-index: 1;
   }
 
-  /* Truth */
-  .truth {
+  /* Two Products */
+  .products {
     padding: 80px 40px;
-    text-align: center;
+    max-width: 900px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
   }
 
-  .truth-line {
-    font-size: clamp(18px, 3vw, 28px);
-    font-weight: 200;
-    color: var(--text-soft);
-    line-height: 1.7;
-    max-width: 600px;
-    margin: 0 auto 12px;
+  .product-card {
+    border-radius: 24px; padding: 40px;
+    position: relative; overflow: hidden;
   }
 
-  .truth-line strong {
-    color: var(--accent);
-    font-weight: 400;
+  .product-rina {
+    background: linear-gradient(135deg, rgba(0,200,150,0.06), rgba(0,200,150,0.02));
+    border: 1px solid rgba(0,200,150,0.12);
   }
 
-  /* Footer */
+  .product-helix {
+    background: linear-gradient(135deg, rgba(232,196,124,0.06), rgba(232,196,124,0.02));
+    border: 1px solid rgba(232,196,124,0.12);
+  }
+
+  .product-label {
+    font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+    margin-bottom: 12px; font-weight: 300;
+  }
+
+  .product-rina .product-label { color: var(--glow); }
+  .product-helix .product-label { color: var(--warm); }
+
+  .product-card h3 {
+    font-size: 22px; font-weight: 300; margin-bottom: 12px;
+  }
+
+  .product-card p {
+    font-size: 13px; font-weight: 200; color: var(--soft); line-height: 1.7;
+  }
+
+  /* Peace */
+  .peace {
+    padding: 120px 40px; text-align: center;
+  }
+
+  .peace-line {
+    font-size: clamp(20px, 3.5vw, 36px); font-weight: 100;
+    color: var(--soft); line-height: 1.6;
+    max-width: 600px; margin: 0 auto 8px;
+  }
+  .peace-line strong { color: var(--glow); font-weight: 300; }
+
+  .peace-symbol {
+    margin-top: 40px;
+    font-size: 11px; letter-spacing: 6px; color: var(--dim); font-weight: 200;
+  }
+
   footer {
-    padding: 40px;
-    text-align: center;
-    border-top: 1px solid var(--border);
+    padding: 40px; text-align: center; border-top: 1px solid var(--border);
   }
+  footer p { font-size: 11px; color: var(--dim); font-weight: 200; letter-spacing: 2px; }
+  footer a { color: var(--glow); text-decoration: none; }
 
-  footer p {
-    font-size: 12px;
-    color: var(--text-dim);
-    font-weight: 300;
-    letter-spacing: 1px;
-  }
-
-  footer a {
-    color: var(--accent);
-    text-decoration: none;
-  }
-
-  /* Mobile */
-  @media (max-width: 600px) {
-    nav { padding: 16px 20px; }
-    .hero { padding: 30px 20px; }
-    .rina-box { padding: 24px; }
-    .pillars { padding: 60px 20px; }
-    .truth { padding: 60px 20px; }
+  @media (max-width: 800px) {
+    .pillar-grid { grid-template-columns: 1fr; }
+    .products { grid-template-columns: 1fr; }
+    nav { padding: 20px 24px; }
+    .rina-transform { width: 220px; height: 220px; }
   }
 </style>
 </head>
 <body>
 
 <div class="ambient">
-  <div class="flow-shape flow-1"></div>
-  <div class="flow-shape flow-2"></div>
-  <div class="flow-shape flow-3"></div>
+  <div class="fluid fluid-1"></div>
+  <div class="fluid fluid-2"></div>
+  <div class="fluid fluid-3"></div>
 </div>
 <div class="grain"></div>
+
+<div class="flow-lines">
+  <svg viewBox="0 0 1440 900" preserveAspectRatio="none">
+    <path d="M0,400 C360,300 720,500 1080,350 S1440,450 1440,400" fill="none" stroke="rgba(0,200,150,0.06)" stroke-width="1"/>
+    <path d="M0,500 C360,450 720,550 1080,480 S1440,520 1440,500" fill="none" stroke="rgba(0,200,150,0.04)" stroke-width="1"/>
+  </svg>
+</div>
 
 <div class="page">
   <nav>
     <div class="logo">
-      <div class="logo-mark">H</div>
+      <img class="logo-img" src="/helix-logo.png" alt="Helix">
       <div class="logo-name"><span>Helix</span> Ascension</div>
     </div>
-    <div class="status">Miami, FL · 2026</div>
+    <div class="nav-status">Miami, FL · 2026</div>
   </nav>
 
   <section class="hero">
-    <div class="hero-badge">Infrastructure for human life</div>
+    <div class="hero-tag">Infrastructure for humanity</div>
     <h1>Built for the <em>forgotten</em></h1>
     <p class="hero-sub">
       Every system built to help people eventually chose to help itself instead.
-      Helix exists because someone who fell through all of them decided to build something different.
+      Helix exists because someone who fell through all of them
+      decided to build something different.
     </p>
 
-    <div class="rina-box">
-      <div class="rina-label">
-        <div class="rina-dot"></div>
-        <span>Rina — The Guide</span>
-      </div>
-      <div class="rina-words">
-        I'm here as a second opinion. I won't pretend I know you.
-        I won't tell you what you want to hear just to gain your trust.
-        I'll just do my best to help. <em>Where are you right now?</em>
+    <div class="rina-transform">
+      <div class="rina-glow-ring"></div>
+      <img class="rina-holo" src="/rina-hologram.png" alt="Rina">
+      <img class="rina-real" src="/rina-human.jpeg" alt="Rina">
+      <div class="rina-label-below">Rina — The Guide</div>
+    </div>
+
+    <div class="rina-container">
+      <div class="rina-card">
+        <div class="rina-header">
+          <div class="rina-pulse"></div>
+          <span>Rina</span>
+        </div>
+        <div class="rina-words">
+          I'm here as a second opinion. I won't pretend I know you.
+          I won't tell you what you want to hear just to gain your trust.
+          I'll just do my best to help. <em>Where are you right now?</em>
+        </div>
       </div>
     </div>
   </section>
 
   <section class="pillars">
-    <div class="pillars-title">Six Pillars</div>
+    <div class="pillars-label">Six Pillars</div>
     <div class="pillar-grid">
       <div class="pillar">
-        <div class="pillar-icon">◎</div>
+        <div class="pillar-symbol">◎</div>
         <h3>The Guide</h3>
-        <p>Rina meets every human exactly where they are. In their language. At their level. No assumptions. No condescension.</p>
+        <p>Rina meets every human exactly where they are. In their language. At their level. A second opinion you can trust.</p>
       </div>
       <div class="pillar">
-        <div class="pillar-icon">◈</div>
+        <div class="pillar-symbol">☮</div>
         <h3>The Safe Place</h3>
         <p>For humans in crisis. Real resources. Real people. You are never a product here.</p>
       </div>
       <div class="pillar">
-        <div class="pillar-icon">◇</div>
+        <div class="pillar-symbol">◇</div>
         <h3>The Knowledge</h3>
-        <p>Education without gatekeeping. Financial literacy. Systems understanding. Delivered at the level each person needs.</p>
+        <p>Education without gatekeeping. Where information comes from, who controls it, and how it moves.</p>
       </div>
       <div class="pillar">
-        <div class="pillar-icon">△</div>
+        <div class="pillar-symbol">△</div>
         <h3>The Tools</h3>
-        <p>Trading, finance, automation. Every tool that creates opportunity. With guardrails. With honesty. Paper trading first.</p>
+        <p>Trading, finance, automation. Full transparency about the data layer. Paper trading first. Always.</p>
       </div>
       <div class="pillar">
-        <div class="pillar-icon">○</div>
+        <div class="pillar-symbol">∞</div>
         <h3>The Community</h3>
-        <p>A plumber and a programmer have equal standing. Your craft is shown and celebrated. No follower counts. Craft over vanity.</p>
+        <p>A plumber and a programmer have equal standing. No follower counts. Craft over vanity.</p>
       </div>
       <div class="pillar">
-        <div class="pillar-icon">◌</div>
+        <div class="pillar-symbol">◌</div>
         <h3>The Atmosphere</h3>
-        <p>Real music. Real culture. Humans need to feel alive while they learn. The experience is for the whole person.</p>
+        <p>Real music. Frequencies tuned to calm, create, and heal. Designed for the whole person.</p>
       </div>
     </div>
   </section>
 
-  <section class="truth">
-    <p class="truth-line">Global dominance creates a cycle.</p>
-    <p class="truth-line"><strong>Global unity creates a better world.</strong></p>
+  <section class="products">
+    <div class="product-card product-rina">
+      <div class="product-label">The front layer</div>
+      <h3>Rina</h3>
+      <p>The guide that meets every human where they are. Consumer-facing. Accessible to anyone on earth. The frequency that calms. The second opinion that tells the truth.</p>
+    </div>
+    <div class="product-card product-helix">
+      <div class="product-label">The infrastructure</div>
+      <h3>Helix Ascension</h3>
+      <p>The engine underneath. Governor architecture. Data layer transparency. Audit logs. Ethical AI infrastructure. Built for institutions, governments, and builders who need reliability and truth.</p>
+    </div>
+  </section>
+
+  <section class="peace">
+    <p class="peace-line">Global dominance creates a cycle.</p>
+    <p class="peace-line"><strong>Global unity creates a better world.</strong></p>
+    <div class="peace-symbol">☮ ◎ ∞</div>
   </section>
 
   <footer>

@@ -1,5 +1,5 @@
 // Helix Ascension — Main Entry Point
-// "Infrastructure for human life"
+// "Infrastructure for humanity"
 // "Global dominance creates a cycle. Global unity creates a better world."
 
 const express = require('express');
@@ -37,7 +37,7 @@ if (fs.existsSync(soulPath)) {
 app.get('/api', (req, res) => {
   res.json({
     name: 'Helix Ascension',
-    mission: 'Infrastructure for human life. Built for the forgotten.',
+    mission: 'Infrastructure for humanity. Built for the forgotten.',
     truth: 'Global dominance creates a cycle. Global unity creates a better world.',
     status: 'operational',
     governor: {
