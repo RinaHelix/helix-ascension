@@ -2,12 +2,7 @@ const ConnectorBase = require('./connector-base');
 
 class TradingViewConnector extends ConnectorBase {
   constructor() {
-    super({
-      name: 'TradingView',
-      type: 'market-data',
-      description: 'Real-time market signals from TradingView Premium webhooks',
-      alwaysActive: true
-    });
+    super('TradingView', { type: 'market-data' });
     this.signals = [];
     this.maxSignals = 500;
   }
@@ -28,7 +23,7 @@ class TradingViewConnector extends ConnectorBase {
     };
     this.signals.unshift(signal);
     if (this.signals.length > this.maxSignals) this.signals = this.signals.slice(0, this.maxSignals);
-    this.log(`Signal: ${signal.ticker} ${signal.action} @ ${signal.price}`);
+    this._log("info", `Signal: ${signal.ticker} ${signal.action} @ ${signal.price}`);
     return signal;
   }
 
@@ -53,9 +48,7 @@ class TradingViewConnector extends ConnectorBase {
       else tickers[s.ticker].holds++;
     }
     return { totalSignals: this.signals.length, activeTickers: Object.keys(tickers).length, tickers, lastUpdate: this.signals[0]?.timestamp || null };
-  }
-
-  log(msg) { console.log(`[TradingView] ${new Date().toISOString()} — ${msg}`); }
+  } — ${msg}`); }
 }
 
 module.exports = TradingViewConnector;

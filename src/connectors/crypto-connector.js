@@ -2,12 +2,7 @@ const ConnectorBase = require('./connector-base');
 
 class CryptoConnector extends ConnectorBase {
   constructor() {
-    super({
-      name: 'Crypto Intelligence',
-      type: 'market-data',
-      description: 'Crypto market data from CoinGecko + on-chain signals',
-      alwaysActive: true
-    });
+    super('Crypto Intelligence', { type: 'market-data' });
     this.cache = {};
     this.cacheTime = 60000; // 60 second cache
     this.watchlist = ['bitcoin', 'ethereum', 'solana', 'cardano', 'dogecoin', 'chainlink', 'avalanche-2', 'polygon'];
@@ -24,10 +19,10 @@ class CryptoConnector extends ConnectorBase {
       const data = await res.json();
       this.cache.prices = data;
       this.cache.pricesTime = now;
-      this.log(`Fetched prices for ${Object.keys(data).length} assets`);
+      this._log("info", `Fetched prices for ${Object.keys(data).length} assets`);
       return data;
     } catch (err) {
-      this.log(`Price fetch error: ${err.message}`);
+      this._log("info", `Price fetch error: ${err.message}`);
       return this.cache.prices || {};
     }
   }
@@ -48,7 +43,7 @@ class CryptoConnector extends ConnectorBase {
       this.cache.trendingTime = now;
       return this.cache.trending;
     } catch (err) {
-      this.log(`Trending fetch error: ${err.message}`);
+      this._log("info", `Trending fetch error: ${err.message}`);
       return this.cache.trending || [];
     }
   }
@@ -83,9 +78,7 @@ class CryptoConnector extends ConnectorBase {
     if (change > 8) return { action: 'CAUTION', reason: 'Extreme rally — possible overextension', confidence: 'low' };
     if (change > 3) return { action: 'MOMENTUM', reason: 'Strong uptrend — but verify with volume', confidence: 'medium' };
     return { action: 'NEUTRAL', reason: 'Normal range — no strong signal', confidence: 'low' };
-  }
-
-  log(msg) { console.log(`[Crypto] ${new Date().toISOString()} — ${msg}`); }
+  } — ${msg}`); }
 }
 
 module.exports = CryptoConnector;

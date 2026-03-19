@@ -2,12 +2,7 @@ const ConnectorBase = require('./connector-base');
 
 class NewsConnector extends ConnectorBase {
   constructor() {
-    super({
-      name: 'News Intelligence',
-      type: 'information',
-      description: 'Real-time news aggregation and sentiment analysis across sources',
-      alwaysActive: true
-    });
+    super('News Intelligence', { type: 'information' });
     this.articles = [];
     this.maxArticles = 200;
     this.sources = [];
@@ -101,9 +96,7 @@ class NewsConnector extends ConnectorBase {
       categories,
       timestamp: new Date().toISOString()
     };
-  }
-
-  log(msg) { console.log(`[News] ${new Date().toISOString()} — ${msg}`); }
+  } — ${msg}`); }
 }
 
 module.exports = NewsConnector;

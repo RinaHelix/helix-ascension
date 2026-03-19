@@ -2,12 +2,7 @@ const ConnectorBase = require('./connector-base');
 
 class SocialConnector extends ConnectorBase {
   constructor() {
-    super({
-      name: 'Social Intelligence',
-      type: 'social-data',
-      description: 'Signal extraction from Reddit, X, and community platforms',
-      alwaysActive: true
-    });
+    super('Social Intelligence', { type: 'social-data' });
     this.signals = [];
     this.maxSignals = 500;
     this.trackedSubreddits = [
@@ -147,9 +142,7 @@ class SocialConnector extends ConnectorBase {
         score: s.score,
         url: s.url
       }));
-  }
-
-  log(msg) { console.log(`[Social] ${new Date().toISOString()} — ${msg}`); }
+  } — ${msg}`); }
 }
 
 module.exports = SocialConnector;

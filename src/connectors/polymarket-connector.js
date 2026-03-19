@@ -2,12 +2,7 @@ const ConnectorBase = require('./connector-base');
 
 class PolymarketConnector extends ConnectorBase {
   constructor() {
-    super({
-      name: 'Polymarket Intelligence',
-      type: 'prediction-markets',
-      description: 'Prediction market data and analysis from Polymarket',
-      alwaysActive: true
-    });
+    super('Polymarket Intelligence', { type: 'prediction-markets' });
     this.markets = [];
     this.maxMarkets = 100;
   }
@@ -110,9 +105,7 @@ class PolymarketConnector extends ConnectorBase {
   
   getByCategory(category, limit = 10) {
     return this.markets.filter(m => m.category === category).slice(0, limit);
-  }
-
-  log(msg) { console.log(`[Polymarket] ${new Date().toISOString()} — ${msg}`); }
+  } — ${msg}`); }
 }
 
 module.exports = PolymarketConnector;
