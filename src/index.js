@@ -10,6 +10,7 @@ const contentRoutes = require('./rina/content-routes');
 const cycleRoutes = require('./modules/cycle-routes');
 const connectorRoutes = require('./connectors/connector-routes');
 const frequencyRoutes = require('./modules/frequency-routes');
+const marketRoutes = require('./connectors/market-routes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -57,6 +58,7 @@ app.use('/content', contentRoutes);
 app.use('/cycles', cycleRoutes);
 app.use('/connect', connectorRoutes);
 app.use('/frequency', frequencyRoutes);
+app.use('/markets', marketRoutes);
 
 // Governor endpoints
 app.get('/governor/status', (req, res) => {
