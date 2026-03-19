@@ -78,7 +78,7 @@ class CryptoConnector extends ConnectorBase {
     if (change > 8) return { action: 'CAUTION', reason: 'Extreme rally — possible overextension', confidence: 'low' };
     if (change > 3) return { action: 'MOMENTUM', reason: 'Strong uptrend — but verify with volume', confidence: 'medium' };
     return { action: 'NEUTRAL', reason: 'Normal range — no strong signal', confidence: 'low' };
-  } — ${msg}`); }
+  }
 }
 
 module.exports = CryptoConnector;

@@ -96,7 +96,7 @@ class NewsConnector extends ConnectorBase {
       categories,
       timestamp: new Date().toISOString()
     };
-  } — ${msg}`); }
+  }
 }
 
 module.exports = NewsConnector;

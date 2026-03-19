@@ -105,7 +105,7 @@ class PolymarketConnector extends ConnectorBase {
   
   getByCategory(category, limit = 10) {
     return this.markets.filter(m => m.category === category).slice(0, limit);
-  } — ${msg}`); }
+  }
 }
 
 module.exports = PolymarketConnector;

@@ -48,7 +48,7 @@ class TradingViewConnector extends ConnectorBase {
       else tickers[s.ticker].holds++;
     }
     return { totalSignals: this.signals.length, activeTickers: Object.keys(tickers).length, tickers, lastUpdate: this.signals[0]?.timestamp || null };
-  } — ${msg}`); }
+  }
 }
 
 module.exports = TradingViewConnector;

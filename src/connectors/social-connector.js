@@ -142,7 +142,7 @@ class SocialConnector extends ConnectorBase {
         score: s.score,
         url: s.url
       }));
-  } — ${msg}`); }
+  }
 }
 
 module.exports = SocialConnector;
