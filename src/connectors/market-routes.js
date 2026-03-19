@@ -114,3 +114,29 @@ router.get('/intelligence/overview', async (req, res) => {
 });
 
 module.exports = router;
+
+// === SOURCE REGISTRY ===
+router.get('/sources', (req, res) => {
+  res.json({
+    newsSources: news.getSources(),
+    socialMonitoring: social.getMonitoringStatus(),
+    cryptoAssets: crypto.watchlist.length,
+    tradingView: 'Webhook receiver active — set alerts to: ' + (process.env.RAILWAY_PUBLIC_DOMAIN || 'your-domain') + '/markets/tradingview/webhook',
+    polymarket: 'Market ingestion active',
+    governor: 'All data governed by CRITICAL.md',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// === SOURCE REGISTRY ===
+router.get('/sources', (req, res) => {
+  res.json({
+    newsSources: news.getSources(),
+    socialMonitoring: social.getMonitoringStatus(),
+    cryptoAssets: crypto.watchlist.length,
+    tradingView: 'Webhook receiver active — set alerts to: ' + (process.env.RAILWAY_PUBLIC_DOMAIN || 'your-domain') + '/markets/tradingview/webhook',
+    polymarket: 'Market ingestion active',
+    governor: 'All data governed by CRITICAL.md',
+    timestamp: new Date().toISOString()
+  });
+});
